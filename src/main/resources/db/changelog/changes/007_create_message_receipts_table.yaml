@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: 007-create-message-receipts-table
+      author: bishnu
+      changes:
+        - createTable:
+            tableName: message_receipts
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_message_receipts
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipient_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: SENT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: delivered_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: read_at
+                  type: TIMESTAMPTZ
+        - addForeignKeyConstraint:
+            baseTableName: message_receipts
+            baseColumnNames: message_id
+            constraintName: fk_receipt_message
+            referencedTableName: messages
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: message_receipts
+            baseColumnNames: recipient_id
+            constraintName: fk_receipt_recipient
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - addUniqueConstraint:
+            tableName: message_receipts
+            columnNames: message_id, recipient_id
+            constraintName: uk_message_recipient
+        - createIndex:
+            tableName: message_receipts
+            indexName: idx_receipt_message
+            columns:
+              - column:
+                  name: message_id
+        - createIndex:
+            tableName: message_receipts
+            indexName: idx_receipt_recipient
+            columns:
+              - column:
+                  name: recipient_id
+        - createIndex:
+            tableName: message_receipts
+            indexName: idx_receipt_status
+            columns:
+              - column:
+                  name: status

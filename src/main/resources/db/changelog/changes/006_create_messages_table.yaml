@@ -1,0 +1,96 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-create-messages-table
+      author: bishnu
+      changes:
+        - createTable:
+            tableName: messages
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_messages
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: conversation_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sender_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: edited
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reply_to_message_id
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: conversation_id
+            constraintName: fk_message_conversation
+            referencedTableName: conversations
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: sender_id
+            constraintName: fk_message_sender
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: reply_to_message_id
+            constraintName: fk_message_reply_to
+            referencedTableName: messages
+            referencedColumnNames: id
+            onDelete: SET NULL
+        - createIndex:
+            tableName: messages
+            indexName: idx_message_conversation
+            columns:
+              - column:
+                  name: conversation_id
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: messages
+            indexName: idx_message_sender
+            columns:
+              - column:
+                  name: sender_id
+        - createIndex:
+            tableName: messages
+            indexName: idx_message_reply_to
+            columns:
+              - column:
+                  name: reply_to_message_id

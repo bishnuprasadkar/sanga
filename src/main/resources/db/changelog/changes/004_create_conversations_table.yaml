@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-create-conversations-table
+      author: bishnu
+      changes:
+        - createTable:
+            tableName: conversations
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_conversations
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(100)
+              - column:
+                  name: created_by
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: conversations
+            baseColumnNames: created_by
+            constraintName: fk_conversation_created_by
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - createIndex:
+            tableName: conversations
+            indexName: idx_conversation_type
+            columns:
+              - column:
+                  name: type
+        - createIndex:
+            tableName: conversations
+            indexName: idx_conversation_created_by
+            columns:
+              - column:
+                  name: created_by

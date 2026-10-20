@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-friend-requests-table
+      author: bishnu
+      changes:
+        - createTable:
+            tableName: friend_requests
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_friend_requests
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sender_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: receiver_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: friend_requests
+            baseColumnNames: sender_id
+            constraintName: fk_friend_request_sender
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - addForeignKeyConstraint:
+            baseTableName: friend_requests
+            baseColumnNames: receiver_id
+            constraintName: fk_friend_request_receiver
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: RESTRICT
+        - addUniqueConstraint:
+            tableName: friend_requests
+            columnNames: sender_id, receiver_id
+            constraintName: uk_friend_request_sender_receiver
+        - createIndex:
+            tableName: friend_requests
+            indexName: idx_friend_request_sender
+            columns:
+              - column:
+                  name: sender_id
+        - createIndex:
+            tableName: friend_requests
+            indexName: idx_friend_request_receiver
+            columns:
+              - column:
+                  name: receiver_id
